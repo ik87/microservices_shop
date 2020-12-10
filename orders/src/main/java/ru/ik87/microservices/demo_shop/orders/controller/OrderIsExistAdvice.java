@@ -7,12 +7,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ControllerAdvice
-public class StatusNotAcceptableAdvice {
+public class OrderIsExistAdvice {
 
     @ResponseBody
-    @ExceptionHandler({StatusNotAcceptableException.class})
-    @ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
-    String statusNotFoundHandler(StatusNotAcceptableException ex) {
+    @ExceptionHandler({OrderIsExistException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    String statusNotFoundHandler(OrderIsExistException ex) {
         return ex.getMessage();
     }
+
 }

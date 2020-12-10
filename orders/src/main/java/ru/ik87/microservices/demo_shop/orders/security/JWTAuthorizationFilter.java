@@ -2,24 +2,22 @@ package ru.ik87.microservices.demo_shop.orders.security;
 
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.stereotype.Component;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
+import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 import static ru.ik87.microservices.demo_shop.orders.security.SecurityConstants.*;
 
-public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
-    public JWTAuthorizationFilter(AuthenticationManager authenticationManager) {
-        super(authenticationManager);
-    }
-
+@Component
+public class JWTAuthorizationFilter implements Filter {
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+       HttpServletResponse response = (HttpServletResponse)servletResponse;
+       HttpServletRequest request = (HttpServletRequest)servletRequest;
+
         String token = request.getHeader(HEADER_STRING);
         if (token == null || !token.startsWith(TOKEN_PREFIX)) {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
@@ -30,9 +28,19 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
             } else {
                 request.setAttribute("client_id", clientId);
-                chain.doFilter(request,response);
+                filterChain.doFilter(request,response);
             }
         }
+    }
+
+    @Override
+    public void init(FilterConfig filterConfig) throws ServletException {
+
+    }
+
+    @Override
+    public void destroy() {
+
     }
 
     static String getClientIdFromJWT(String token) {

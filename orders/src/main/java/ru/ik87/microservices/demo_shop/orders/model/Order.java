@@ -1,6 +1,8 @@
 package ru.ik87.microservices.demo_shop.orders.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
@@ -12,11 +14,13 @@ public class Order {
     private Long orderId;
 
     @NotNull
+    @JsonIgnore
     private Long clientId;
     @NotNull
     private Double price;
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
+    @JsonIgnore
     private Long timeChangeStatus;
 
     public Order() {
@@ -69,7 +73,7 @@ public class Order {
 
     @Override
     public String toString() {
-        return "OrderDTO{" +
+        return "Order{" +
                 "orderId=" + orderId +
                 ", clientId=" + clientId +
                 ", price=" + price +
