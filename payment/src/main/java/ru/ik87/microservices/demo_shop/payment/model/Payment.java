@@ -1,4 +1,4 @@
-package ru.ik87.microservices.demo_shop.delivery.model;
+package ru.ik87.microservices.demo_shop.payment.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -6,34 +6,37 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 
-@Entity(name = "DELIVERIES")
-public class Delivery {
+@Entity(name="PAYMENTS")
+public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @JsonIgnore
-    private Long deliveryId;
+    private Long paymentId;
+
     @NotNull
     @JsonIgnore
     private Long clientId;
+
     @NotNull
     private Long orderId;
+
     @NotNull
-    private Double price;
-    @NotNull
+    private Double totalPrice;
+
     @Enumerated(EnumType.STRING)
-    private DeliveryStatus status;
+    private PaymentStatus status;
+
     @JsonIgnore
     private Long timeChangeStatus;
 
-    public Delivery() {
+    public Payment() {
     }
 
-    public Long getDeliveryId() {
-        return deliveryId;
+    public Long getPaymentId() {
+        return paymentId;
     }
 
-    public void setDeliveryId(Long deliveryId) {
-        this.deliveryId = deliveryId;
+    public void setPaymentId(Long paymentId) {
+        this.paymentId = paymentId;
     }
 
     public Long getClientId() {
@@ -52,19 +55,19 @@ public class Delivery {
         this.orderId = orderId;
     }
 
-    public Double getPrice() {
-        return price;
+    public Double getTotalPrice() {
+        return totalPrice;
     }
 
-    public void setPrice(Double price) {
-        this.price = price;
+    public void setTotalPrice(Double totalPrice) {
+        this.totalPrice = totalPrice;
     }
 
-    public DeliveryStatus getStatus() {
+    public PaymentStatus getStatus() {
         return status;
     }
 
-    public void setStatus(DeliveryStatus status) {
+    public void setStatus(PaymentStatus status) {
         this.status = status;
         this.timeChangeStatus = new Date().getTime();
     }

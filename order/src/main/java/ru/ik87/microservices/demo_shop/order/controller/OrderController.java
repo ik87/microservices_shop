@@ -32,9 +32,8 @@ public class OrderController {
 
     @PostMapping("/orders")
     Order newOrder(@RequestBody Order order, @RequestAttribute("client_id") String client_id) {
-
         order.setClientId(Long.valueOf(client_id));
-        if(repository.existsById(order.getOrderId())) {
+        if (repository.existsById(order.getOrderId())) {
             throw new OrderIsExistException(order.getOrderId());
         }
         return repository.save(order);
@@ -44,12 +43,12 @@ public class OrderController {
     Order replaceOrder(@PathVariable Long order_id, @RequestBody Order newOrder, @RequestAttribute("client_id") String client_id) {
         Collection<OrderStatus> statuses = List.of(OrderStatus.NEW, OrderStatus.CONFIRMED);
         Order order = repository.findByClientIdAndOrderIdAndStatusIn(Long.valueOf(client_id), order_id, statuses);
-       if(order == null) {
-           throw new OrderNotFoundException(order_id);
-       }
-       newOrder.setClientId(Long.valueOf(client_id));
-       order.setPrice(newOrder.getPrice());
-       return repository.save(order);
+        if (order == null) {
+            throw new OrderNotFoundException(order_id);
+        }
+        newOrder.setClientId(Long.valueOf(client_id));
+        order.setPrice(newOrder.getPrice());
+        return repository.save(order);
     }
 
     @PutMapping("/orders/{order_id}/status")
@@ -59,6 +58,9 @@ public class OrderController {
         boolean statusExist = Arrays
                 .stream(OrderStatus.values())
                 .anyMatch(v -> v.name().equals(statusFormatted));
+        if (order == null) {
+            throw new OrderNotFoundException(order_id);
+        }
 
         if (!statusExist) {
             throw new StatusNotAcceptableException(statusFormatted);
