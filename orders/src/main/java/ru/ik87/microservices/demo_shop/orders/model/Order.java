@@ -26,14 +26,6 @@ public class Order {
     public Order() {
     }
 
-    public Order(@NotNull Long orderId, @NotNull Long clientId, @NotNull Double price) {
-        this.price = price;
-        this.status = OrderStatus.NEW;
-        this.timeChangeStatus = new Date().getTime();
-        this.clientId = clientId;
-        this.orderId = orderId;
-    }
-
     public Long getOrderId() {
         return orderId;
     }
