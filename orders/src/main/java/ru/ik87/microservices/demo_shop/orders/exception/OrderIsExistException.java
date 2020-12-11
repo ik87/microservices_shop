@@ -1,7 +1,7 @@
-package ru.ik87.microservices.demo_shop.orders.controller;
+package ru.ik87.microservices.demo_shop.orders.exception;
 
 public class OrderIsExistException extends RuntimeException {
-    OrderIsExistException(Long id) {
+    public  OrderIsExistException(Long id) {
         super("Order is exist " + id);
     }
 

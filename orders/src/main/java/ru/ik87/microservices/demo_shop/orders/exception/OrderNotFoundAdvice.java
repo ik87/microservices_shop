@@ -1,4 +1,4 @@
-package ru.ik87.microservices.demo_shop.orders.controller;
+package ru.ik87.microservices.demo_shop.orders.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;

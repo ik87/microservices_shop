@@ -4,9 +4,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 import ru.ik87.microservices.demo_shop.orders.OrdersApplication;
+import ru.ik87.microservices.demo_shop.orders.exception.OrderIsExistException;
+import ru.ik87.microservices.demo_shop.orders.exception.OrderNotFoundException;
+import ru.ik87.microservices.demo_shop.orders.exception.StatusNotAcceptableException;
 import ru.ik87.microservices.demo_shop.orders.model.Order;
 import ru.ik87.microservices.demo_shop.orders.model.OrderStatus;
 import ru.ik87.microservices.demo_shop.orders.repostitory.OrderRepository;
+import ru.ik87.microservices.demo_shop.orders.exception.*;
 
 import java.util.Arrays;
 import java.util.Collection;

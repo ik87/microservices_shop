@@ -1,7 +1,7 @@
-package ru.ik87.microservices.demo_shop.orders.controller;
+package ru.ik87.microservices.demo_shop.orders.exception;
 
 public class StatusNotAcceptableException extends RuntimeException {
-    StatusNotAcceptableException(String status) {
+    public StatusNotAcceptableException(String status) {
         super("status not correct " + status);
     }
 }
