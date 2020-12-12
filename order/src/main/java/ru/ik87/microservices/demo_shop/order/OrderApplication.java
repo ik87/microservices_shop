@@ -4,8 +4,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import ru.ik87.microservices.demo_shop.order.services.JwtService;
-import ru.ik87.microservices.demo_shop.order.services.JwtServiceImp;
+import ru.ik87.microservices.demo_shop.order.service.JwtService;
+import ru.ik87.microservices.demo_shop.order.service.JwtServiceImp;
 
 @SpringBootApplication
 public class OrderApplication {

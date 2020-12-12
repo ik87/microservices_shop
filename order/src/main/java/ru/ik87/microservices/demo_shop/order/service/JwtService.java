@@ -1,4 +1,4 @@
-package ru.ik87.microservices.demo_shop.order.services;
+package ru.ik87.microservices.demo_shop.order.service;
 
 public interface JwtService {
     String getClientIdFromJWT(String token);

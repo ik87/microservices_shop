@@ -3,7 +3,7 @@ package ru.ik87.microservices.demo_shop.order.security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import ru.ik87.microservices.demo_shop.order.services.JwtService;
+import ru.ik87.microservices.demo_shop.order.service.JwtService;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
@@ -26,18 +26,22 @@ public class JWTAuthorizationFilter implements Filter {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
 
         String token = request.getHeader(headerPrefix);
+
         if (token == null || !token.startsWith(tokenPrefix)) {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-        } else {
-            token = token.replace(tokenPrefix, "");
-            String clientId = jwtService.getClientIdFromJWT(token);
-            if (clientId == null) {
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-            } else {
-                request.setAttribute("client_id", clientId);
-                filterChain.doFilter(request, response);
-            }
+            return;
         }
+
+        token = token.replace(tokenPrefix, "");
+        String clientId = jwtService.getClientIdFromJWT(token);
+
+        if (clientId == null) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+        }
+
+        request.setAttribute("client_id", clientId);
+        filterChain.doFilter(request, response);
     }
 
     @Override
@@ -49,6 +53,5 @@ public class JWTAuthorizationFilter implements Filter {
     public void destroy() {
 
     }
-
 
 }

@@ -1,7 +1,7 @@
 package ru.ik87.microservices.demo_shop.payment.exception;
 
 public class PaymentNotFoundException extends RuntimeException {
-    public PaymentNotFoundException(String id) {
-        super("Could not find payment " + id);
+    public PaymentNotFoundException(Long id) {
+        super("Could not find payment with order id " + id);
     }
 }

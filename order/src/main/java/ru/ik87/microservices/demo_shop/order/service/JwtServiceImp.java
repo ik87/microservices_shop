@@ -1,4 +1,4 @@
-package ru.ik87.microservices.demo_shop.order.services;
+package ru.ik87.microservices.demo_shop.order.service;
 
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;

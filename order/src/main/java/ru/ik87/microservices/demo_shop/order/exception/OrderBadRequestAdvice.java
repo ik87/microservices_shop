@@ -1,4 +1,4 @@
-package ru.ik87.microservices.demo_shop.delivery.exception;
+package ru.ik87.microservices.demo_shop.order.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -7,12 +7,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ControllerAdvice
-public class StatusNotAcceptableAdvice {
+public class OrderBadRequestAdvice {
 
     @ResponseBody
-    @ExceptionHandler({StatusNotAcceptableException.class})
-    @ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
-    String statusNotFoundHandler(StatusNotAcceptableException ex) {
+    @ExceptionHandler({OrderBadRequestException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    String orderBadRequestHandler(OrderBadRequestException ex) {
         return ex.getMessage();
     }
 }

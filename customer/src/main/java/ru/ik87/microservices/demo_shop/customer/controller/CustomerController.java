@@ -16,13 +16,13 @@ public class CustomerController {
     }
 
     @PostMapping("/customer")
-    public Customer newCustomer(@RequestBody Customer customer,  @RequestAttribute("client_id") String client_id) {
+    public Customer newCustomer(@RequestBody Customer customer,  @RequestAttribute String client_id) {
         customer.setClientId(Long.valueOf(client_id));
         return repository.save(customer);
     }
 
     @GetMapping("/customer")
-    public Customer getCustomer(@RequestAttribute("client_id") String client_id) {
+    public Customer getCustomer(@RequestAttribute String client_id) {
         Optional<Customer> customer = repository.findById(Long.valueOf(client_id));
         if(customer.isEmpty()) {
             throw new CustomerNotFoundException(client_id);

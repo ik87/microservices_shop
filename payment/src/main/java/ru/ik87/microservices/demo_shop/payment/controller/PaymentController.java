@@ -5,7 +5,6 @@ import ru.ik87.microservices.demo_shop.payment.exception.PaymentNotFoundExceptio
 import ru.ik87.microservices.demo_shop.payment.model.Payment;
 import ru.ik87.microservices.demo_shop.payment.repository.PaymentRepository;
 
-import java.util.Optional;
 
 @RestController
 public class PaymentController {
@@ -16,21 +15,22 @@ public class PaymentController {
     }
 
     @PostMapping("/payment/{order_id}/pay")
-    public Payment newPayment(@PathVariable Long order_id, @RequestAttribute("client_id") String client_id) {
-        //get order price info
-        //get delivery info
+    public Payment newPayment(@PathVariable Long order_id, @RequestAttribute String client_id) {
+        //get order price info, get order status
+        //get delivery info, get delivery status
         //get customer info
 
-        payment.setClientId(Long.valueOf(client_id));
-        return repository.save(payment);
+       // payment.setClientId(Long.valueOf(client_id));
+       // return repository.save(payment);
+        return null;
     }
 
     @GetMapping("/payment/{order_id}")
-    public Payment getPayment(@RequestAttribute("client_id") String client_id) {
-        Optional<Payment> payment = repository.findById(Long.valueOf(client_id));
-        if(payment.isEmpty()) {
-            throw new PaymentNotFoundException(client_id);
+    public Payment getPayment(@PathVariable Long order_id, @RequestAttribute String client_id) {
+        Payment payment = repository.findByOrderIdAndClientId(order_id, Long.valueOf(client_id));
+        if(payment == null) {
+            throw new PaymentNotFoundException(order_id);
         }
-        return payment.get();
+        return payment;
     }
 }
