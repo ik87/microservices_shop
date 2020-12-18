@@ -6,5 +6,6 @@ import ru.ik87.microservices.demo_shop.delivery.persistence.model.DeliveryStatus
 
 public interface DeliveryRepository extends CrudRepository<Delivery, Long> {
     Delivery findByOrderIdAndClientId(Long orderId, Long clientId);
-    Delivery findByClientIdAndOrdersIsContaining(Long clientId, String order);
+    Delivery findByOrderId(Long orderId);
+    Delivery findByClientIdAndStatus(Long clientId, DeliveryStatus status);
 }

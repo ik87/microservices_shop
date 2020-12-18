@@ -12,18 +12,23 @@ public class Delivery {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @JsonIgnore
     private Long deliveryId;
-    @NotNull
     @JsonIgnore
     private Long clientId;
-    @NotNull
     private Long orderId;
-    @NotNull
     private Double price;
-    @NotNull
     @Enumerated(EnumType.STRING)
     private DeliveryStatus status;
     @JsonIgnore
     private Long timeChangeStatus;
+    private Customer customer;
+
+    public Customer getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
+    }
 
     public Delivery() {
     }
@@ -75,5 +80,18 @@ public class Delivery {
 
     public void setTimeChangeStatus(Long timeChangeStatus) {
         this.timeChangeStatus = timeChangeStatus;
+    }
+
+    @Override
+    public String toString() {
+        return "Delivery{" +
+                "deliveryId=" + deliveryId +
+                ", clientId=" + clientId +
+                ", orderId=" + orderId +
+                ", price=" + price +
+                ", status=" + status +
+                ", timeChangeStatus=" + timeChangeStatus +
+                ", customer=" + customer +
+                '}';
     }
 }
