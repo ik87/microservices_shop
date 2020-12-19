@@ -1,4 +1,4 @@
-package ru.ik87.microservices.demo_shop.delivery.kafka.consumer.config;
+package ru.ik87.microservices.demo_shop.payment.kafka.consumer.config;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;

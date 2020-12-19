@@ -5,8 +5,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import ru.ik87.microservices.demo_shop.delivery.persistence.model.Delivery;
-import ru.ik87.microservices.demo_shop.delivery.persistence.model.DeliveryStatus;
+import ru.ik87.microservices.demo_shop.delivery.persistence.model.delivery.Delivery;
+import ru.ik87.microservices.demo_shop.delivery.persistence.model.delivery.DeliveryStatus;
 
 import java.util.Set;
 
