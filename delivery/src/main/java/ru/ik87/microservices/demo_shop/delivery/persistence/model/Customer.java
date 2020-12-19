@@ -1,4 +1,5 @@
-package ru.ik87.microservices.demo_shop.delivery.kafka.dto;
+package ru.ik87.microservices.demo_shop.delivery.persistence.model;
+
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -6,13 +7,12 @@ import javax.persistence.Embeddable;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Embeddable
-public class CustomerDTO {
+public class Customer {
     private String email;
     private String name;
     private String phone;
     private String address;
-
-    public CustomerDTO() {
+    public Customer() {
     }
 
     public String getEmail() {
@@ -49,7 +49,7 @@ public class CustomerDTO {
 
     @Override
     public String toString() {
-        return "CustomerDTO{" +
+        return "Customer{" +
                 "email='" + email + '\'' +
                 ", name='" + name + '\'' +
                 ", phone='" + phone + '\'' +

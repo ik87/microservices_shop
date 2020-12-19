@@ -1,6 +1,7 @@
 package ru.ik87.microservices.demo_shop.payment.persistence.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.Embeddable;
 
@@ -10,6 +11,7 @@ public class Customer {
     private String email;
     private String name;
     private String phone;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String bankCard;
 
     public Customer() {

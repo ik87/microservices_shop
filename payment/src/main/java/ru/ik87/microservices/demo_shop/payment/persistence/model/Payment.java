@@ -10,6 +10,7 @@ public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long paymentId;
+    @JsonIgnore
     private Long clientId;
 
     @AttributeOverride(
@@ -70,10 +71,6 @@ public class Payment {
 
     public void setDelivery(Delivery delivery) {
         this.delivery = delivery;
-    }
-
-    public boolean isReady() {
-        return order != null && customer != null && delivery != null;
     }
 
     public PaymentStatus getStatus() {

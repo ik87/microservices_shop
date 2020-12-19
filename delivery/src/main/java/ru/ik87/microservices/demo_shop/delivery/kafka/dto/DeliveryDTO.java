@@ -1,19 +1,21 @@
 package ru.ik87.microservices.demo_shop.delivery.kafka.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class DeliveryDTO {
-    private Long orderId;
+    private Long deliveryId;
     private Double price;
-    private String status;
 
     public DeliveryDTO() {
     }
 
-    public Long getOrderId() {
-        return orderId;
+    public Long getDeliveryId() {
+        return deliveryId;
     }
 
-    public void setOrderId(Long orderId) {
-        this.orderId = orderId;
+    public void setDeliveryId(Long deliveryId) {
+        this.deliveryId = deliveryId;
     }
 
     public Double getPrice() {
@@ -24,11 +26,11 @@ public class DeliveryDTO {
         this.price = price;
     }
 
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
+    @Override
+    public String toString() {
+        return "DeliveryDTO{" +
+                "deliveryId=" + deliveryId +
+                ", price=" + price +
+                '}';
     }
 }

@@ -12,16 +12,11 @@ import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Controller;
-import ru.ik87.microservices.demo_shop.delivery.kafka.dto.CustomerDTO;
 import ru.ik87.microservices.demo_shop.delivery.kafka.dto.DeliveryDTO;
-import ru.ik87.microservices.demo_shop.delivery.kafka.dto.OrderDTO;
-import ru.ik87.microservices.demo_shop.delivery.persistence.model.delivery.Customer;
-import ru.ik87.microservices.demo_shop.delivery.persistence.model.delivery.Delivery;
-import ru.ik87.microservices.demo_shop.delivery.persistence.model.delivery.DeliveryStatus;
-import ru.ik87.microservices.demo_shop.delivery.persistence.model.temporary.Temp;
+import ru.ik87.microservices.demo_shop.delivery.persistence.model.*;
 import ru.ik87.microservices.demo_shop.delivery.persistence.repositroy.DeliveryRepository;
 import ru.ik87.microservices.demo_shop.delivery.persistence.repositroy.TempRepository;
-import ru.ik87.microservices.demo_shop.delivery.service.CalculateDeliveryPrice;
+import ru.ik87.microservices.demo_shop.delivery.service.DeliveryService;
 
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -38,7 +33,7 @@ public class Receiver {
     String deliveryTopic;
 
     @Autowired
-    private CalculateDeliveryPrice calculateDeliveryPrice;
+    private DeliveryService deliveryService;
 
     @Autowired
     KafkaTemplate<String, String> kafkaTemplate;
@@ -53,13 +48,15 @@ public class Receiver {
         ObjectMapper objectMapper = new ObjectMapper();
         LOGGER.info("client_id ='{}' order = '{}'", clientId, orderJson);
         //find clientId with state 'NEW' and orderId null or create new customer
-        OrderDTO orderDTO = objectMapper.readValue(orderJson, OrderDTO.class);
+        Order order = objectMapper.readValue(orderJson, Order.class);
         //save to temporary db, check if all not null then save to delivery table
-        Delivery delivery = saveToTemporaryTable(clientId, temp -> temp.setOrderDTO(orderDTO));
+        Delivery delivery = saveToTemporaryTable(clientId, temp -> temp.setOrder(order));
 
         if (delivery != null) {
             repository.save(delivery);
-            sendToTopicDelivery(new ObjectMapper(), clientId, deliveryToDTO(delivery));
+            DeliveryDTO deliveryDTO = objectMapper.convertValue(delivery, DeliveryDTO.class);
+            kafkaTemplate.send(deliveryTopic, clientId, objectMapper.writeValueAsString(deliveryDTO));
+            LOGGER.info("deliveryDTO = '{}'", deliveryDTO);
             LOGGER.info("delivery = '{}'", delivery);
         }
     }
@@ -67,15 +64,18 @@ public class Receiver {
 
     @KafkaListener(topics = "${kakfa.consumer.topic.customer}")
     public void receiveCustomer(@Header(KafkaHeaders.RECEIVED_MESSAGE_KEY) String clientId, @Payload String customerJson) throws JsonProcessingException {
+          ObjectMapper objectMapper = new ObjectMapper();
         LOGGER.info("client_id ='{}' customer = '{}'", clientId, customerJson);
         //find by clientId with state 'NEW' and orderId null or create new customer
-        CustomerDTO customerDTO = new ObjectMapper().readValue(customerJson, CustomerDTO.class);
+        Customer customer = objectMapper.readValue(customerJson, Customer.class);
         //save to temporary db, check if all not null then save to delivery table
-        Delivery delivery = saveToTemporaryTable(clientId, temp -> temp.setCustomerDTO(customerDTO));
+        Delivery delivery = saveToTemporaryTable(clientId, temp -> temp.setCustomer(customer));
 
         if (delivery != null) {
             repository.save(delivery);
-            sendToTopicDelivery(new ObjectMapper(), clientId, deliveryToDTO(delivery));
+            DeliveryDTO deliveryDTO = objectMapper.convertValue(delivery, DeliveryDTO.class);
+            kafkaTemplate.send(deliveryTopic, clientId, objectMapper.writeValueAsString(deliveryDTO));
+            LOGGER.info("deliveryDTO = '{}'", deliveryDTO);
             LOGGER.info("delivery = '{}'", delivery);
         }
     }
@@ -94,7 +94,7 @@ public class Receiver {
 
         if (temp.get().isReady()) {
             delivery = templateToDelivery(temp.get());
-            delivery.setPrice(calculateDeliveryPrice.calc(delivery));
+            delivery.setPrice(deliveryService.calcPrice(delivery));
             delivery.setStatus(DeliveryStatus.PENDING);
             tempRepository.delete(temp.get());
         } else {
@@ -119,33 +119,12 @@ public class Receiver {
         LOGGER.info("delivery = '{}'", delivery);
     }
 
-
-    private Customer customerFromDto(CustomerDTO customerDTO) {
-        Customer customer = new Customer();
-        customer.setAddress(customerDTO.getAddress());
-        customer.setEmail(customerDTO.getEmail());
-        customer.setName(customerDTO.getName());
-        customer.setPhone(customerDTO.getPhone());
-        return customer;
-    }
-
-    private DeliveryDTO deliveryToDTO(Delivery delivery) {
-        DeliveryDTO deliveryDTO = new DeliveryDTO();
-        deliveryDTO.setOrderId(delivery.getOrderId());
-        deliveryDTO.setPrice(delivery.getPrice());
-        deliveryDTO.setStatus(delivery.getStatus().name());
-        return deliveryDTO;
-    }
-
     private Delivery templateToDelivery(Temp temp) {
         Delivery delivery = new Delivery();
         delivery.setClientId(temp.getClientId());
-        delivery.setCustomer(customerFromDto(temp.getCustomerDTO()));
-        delivery.setOrderId(temp.getOrderDTO().getOrderId());
+        delivery.setCustomer(temp.getCustomer());
+        delivery.setOrder(temp.getOrder());
         return delivery;
     }
 
-    private void sendToTopicDelivery(ObjectMapper objectMapper, String key, DeliveryDTO deliveryDTO) throws JsonProcessingException {
-        kafkaTemplate.send(deliveryTopic, key, objectMapper.writeValueAsString(deliveryDTO));
-    }
 }

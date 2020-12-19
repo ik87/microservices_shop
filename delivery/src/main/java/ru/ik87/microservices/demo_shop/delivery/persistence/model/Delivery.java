@@ -1,33 +1,29 @@
-package ru.ik87.microservices.demo_shop.delivery.persistence.model.delivery;
+package ru.ik87.microservices.demo_shop.delivery.persistence.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
 import java.util.Date;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 @Entity(name = "DELIVERIES")
 public class Delivery {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @JsonIgnore
     private Long deliveryId;
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Long clientId;
-    private Long orderId;
-    private Double price;
     @Enumerated(EnumType.STRING)
     private DeliveryStatus status;
-    @JsonIgnore
     private Long timeChangeStatus;
+    //@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private Double price;
+
     private Customer customer;
 
-    public Customer getCustomer() {
-        return customer;
-    }
-
-    public void setCustomer(Customer customer) {
-        this.customer = customer;
-    }
+    private Order order;
 
     public Delivery() {
     }
@@ -48,22 +44,6 @@ public class Delivery {
         this.clientId = clientId;
     }
 
-    public Long getOrderId() {
-        return orderId;
-    }
-
-    public void setOrderId(Long orderId) {
-        this.orderId = orderId;
-    }
-
-    public Double getPrice() {
-        return price;
-    }
-
-    public void setPrice(Double price) {
-        this.price = price;
-    }
-
     public DeliveryStatus getStatus() {
         return status;
     }
@@ -81,16 +61,40 @@ public class Delivery {
         this.timeChangeStatus = timeChangeStatus;
     }
 
+    public Double getPrice() {
+        return price;
+    }
+
+    public void setPrice(Double price) {
+        this.price = price;
+    }
+
+    public Customer getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
+    }
+
+    public Order getOrder() {
+        return order;
+    }
+
+    public void setOrder(Order order) {
+        this.order = order;
+    }
+
     @Override
     public String toString() {
         return "Delivery{" +
                 "deliveryId=" + deliveryId +
                 ", clientId=" + clientId +
-                ", orderId=" + orderId +
-                ", price=" + price +
                 ", status=" + status +
                 ", timeChangeStatus=" + timeChangeStatus +
+                ", price=" + price +
                 ", customer=" + customer +
+                ", order=" + order +
                 '}';
     }
 }
