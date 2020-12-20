@@ -1,6 +1,5 @@
 package ru.ik87.microservices.demo_shop.delivery.persistence.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -18,7 +17,7 @@ public class Delivery {
     @Enumerated(EnumType.STRING)
     private DeliveryStatus status;
     private Long timeChangeStatus;
-    //@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+
     private Double price;
 
     private Customer customer;

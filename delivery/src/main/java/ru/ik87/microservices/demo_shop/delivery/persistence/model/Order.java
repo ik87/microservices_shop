@@ -2,7 +2,6 @@ package ru.ik87.microservices.demo_shop.delivery.persistence.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import java.util.Objects;
 

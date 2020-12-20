@@ -3,7 +3,7 @@ package ru.ik87.microservices.demo_shop.delivery.persistence.model;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
-@Entity(name = "Temp")
+@Entity(name = "TEMP")
 public class Temp {
     @Id
     private Long clientId;
