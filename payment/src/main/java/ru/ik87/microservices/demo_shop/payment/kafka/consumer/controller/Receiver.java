@@ -48,7 +48,6 @@ public class Receiver {
     @KafkaListener(topics = "${kakfa.consumer.topic.order}")
     public void receiveOrder(@Header(KafkaHeaders.RECEIVED_MESSAGE_KEY) String clientId, @Payload String orderJson) throws JsonProcessingException {
         LOGGER.info("client_id ='{}' order = '{}'", clientId, orderJson);
-        //find clientId with state 'NEW' and orderId null or create new customer
         Order order = new ObjectMapper().readValue(orderJson, Order.class);
         uniteDataReceiver(clientId, temp -> temp.setOrder(order));
 
@@ -57,7 +56,6 @@ public class Receiver {
     @KafkaListener(topics = "${kakfa.consumer.topic.customer}")
     public void receiveCustomer(@Header(KafkaHeaders.RECEIVED_MESSAGE_KEY) String clientId, @Payload String customerJson) throws JsonProcessingException {
         LOGGER.info("client_id ='{}' customer = '{}'", clientId, customerJson);
-        //find by clientId with state 'NEW' and orderId null or create new customer
         Customer customer = new ObjectMapper().readValue(customerJson, Customer.class);
         uniteDataReceiver(clientId, temp -> temp.setCustomer(customer));
     }
@@ -65,14 +63,13 @@ public class Receiver {
     @KafkaListener(topics = "${kafka.consumer.topic.delivery}")
     public void receiveDelivery(@Header(KafkaHeaders.RECEIVED_MESSAGE_KEY) String clientId, @Payload String deliveryJson) throws JsonProcessingException {
         LOGGER.info("client_id ='{}' delivery = '{}'", clientId, deliveryJson);
-        //find by clientId with state 'NEW' and orderId null or create new customer
         Delivery delivery = new ObjectMapper().readValue(deliveryJson, Delivery.class);
         uniteDataReceiver(clientId, temp -> temp.setDelivery(delivery));
     }
 
 
 
-    /** Async, Idempotence.
+    /** Idempotence.
      *  Unite data by client id that was received from services:
      *  Customer
      *  Order
