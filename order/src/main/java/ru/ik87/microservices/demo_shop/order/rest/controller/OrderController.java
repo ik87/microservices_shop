@@ -49,6 +49,7 @@ public class OrderController {
         if (order.getStatus() == OrderStatus.CONFIRMED) {
             throw new OrderBadRequestException(order_id);
         }
+        order.setStatus(OrderStatus.NEW);
         order.setPrice(newOrder.getPrice());
         return repository.save(order);
     }
@@ -75,7 +76,7 @@ public class OrderController {
         if (order == null) {
             throw new OrderNotFoundException(order_id);
         }
-        if (order.getStatus() != OrderStatus.CONFIRMED) {
+        if (order.getStatus() == OrderStatus.CONFIRMED) {
             throw new OrderBadRequestException(order_id);
         }
         repository.delete(order);

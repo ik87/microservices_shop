@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.ik87.microservices.demo_shop.payment.persistence.model.Payment;
 import ru.ik87.microservices.demo_shop.payment.persistence.model.PaymentStatus;
 import ru.ik87.microservices.demo_shop.payment.persistence.repository.PaymentRepository;
+import ru.ik87.microservices.demo_shop.payment.rest.exception.PaymentBadRequestException;
 import ru.ik87.microservices.demo_shop.payment.rest.exception.PaymentNotFoundException;
 import ru.ik87.microservices.demo_shop.payment.service.PaymentService;
 
@@ -33,6 +34,9 @@ public class PaymentController {
         Payment payment = repository.searchByOrderIdAndClientId(order_id, Long.valueOf(client_id));
         if(payment == null) {
             throw new PaymentNotFoundException(order_id);
+        }
+        if(payment.getStatus() == PaymentStatus.PAID) {
+            throw new PaymentBadRequestException(order_id);
         }
         boolean result = paymentService.pay(payment);
 
