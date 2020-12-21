@@ -10,6 +10,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+/**
+ * Check client by his JWT
+ *
+ * @author Kosolapov Ilya (d_dexter@mail.ru)
+ * @version 1.0
+ * @since 20.12.2020
+ */
 @Component
 public class JWTAuthorizationFilter implements Filter {
 

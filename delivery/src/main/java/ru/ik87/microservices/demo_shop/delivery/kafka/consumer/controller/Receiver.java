@@ -23,9 +23,17 @@ import java.util.function.Consumer;
 
 /**
  * Controller that receive data from services:
- *  Order       |   model data
- *  Customer    |   model data
- *  Payment     |   command
+ *  service    *     type
+ *  **************************
+ *  Order       *   model data
+ *  Customer    *   model data
+ *  Payment     *   command
+ *  ***************************
+ *  Also Send data to delivery topic
+ *
+ *  Logic:
+ *  receive data -> unite in temporary table -> save bunch in delivery table
+ **
  * @author Kosolapov Ilya (d_dexter@mail.ru)
  * @version 1.0
  * @since 20.12.2020
@@ -45,7 +53,7 @@ public class Receiver {
     private DeliveryService deliveryService;
 
     @Autowired
-    KafkaTemplate<String, String> kafkaTemplate;
+    private KafkaTemplate<String, String> kafkaTemplate;
 
     public Receiver(DeliveryRepository repository, TempRepository tempRepository) {
         this.tempRepository = tempRepository;
@@ -64,13 +72,19 @@ public class Receiver {
     public void receiveCustomer(@Header(KafkaHeaders.RECEIVED_MESSAGE_KEY) String clientId, @Payload String customerJson) throws JsonProcessingException {
           ObjectMapper objectMapper = new ObjectMapper();
         LOGGER.info("client_id ='{}' customer = '{}'", clientId, customerJson);
-        //save to temporary table, check if all not null then save to delivery table
         Customer customer = objectMapper.readValue(customerJson, Customer.class);
+        //save to temporary table, check if all not null then save to delivery table
         unitDataAndSendToDeliveryTopic(clientId, temp -> temp.setCustomer(customer));
 
     }
 
-
+    /**
+     * Idempotence.
+     * After successful paid, receive delivery id from service:
+     * Payment
+     * send order to customer
+     * @param deliveryId
+     */
     @KafkaListener(topics = "${kakfa.consumer.topic.payment}")
     public void receivePayment(Long deliveryId)  {
         Optional<Delivery> delivery = repository.findById(deliveryId);
@@ -86,10 +100,25 @@ public class Receiver {
     }
 
 
-
-    private void unitDataAndSendToDeliveryTopic(String clientId, Consumer<Temp> temp) throws JsonProcessingException {
-        Delivery delivery = saveToTemporaryTable(clientId, temp);
+    /**
+     * Idempotence.
+     * Receive date from services:
+     * Customer
+     * Order
+     * unite them in {@link #uniteDataReceiver(String, Consumer)}.
+     * calculate and set delivery cost
+     * and send to:
+     * Delivery topic
+     *
+     * @param clientId that define table's row
+     * @param consumer universe receiver method
+     * @throws JsonProcessingException
+     */
+    private void unitDataAndSendToDeliveryTopic(String clientId, Consumer<Temp> consumer) throws JsonProcessingException {
+        Delivery delivery = uniteDataReceiver(clientId, consumer);
         if (delivery != null) {
+            delivery.setPrice(deliveryService.calcPrice(delivery));
+            repository.save(delivery);
             ObjectMapper objectMapper = new ObjectMapper();
             DeliveryDTO deliveryDTO = objectMapper.convertValue(delivery, DeliveryDTO.class);
             kafkaTemplate.send(deliveryTopic, clientId, objectMapper.writeValueAsString(deliveryDTO));
@@ -98,36 +127,34 @@ public class Receiver {
         }
     }
 
-    /** Unite data by client id that was received from services:
+    /** Idempotence.
+     *  Unite data by client id that was received from services:
      *  Customer
      *  Order
      *  and save them to temporary table:
      *  "TEMP"
-     *  when the row in table will be full, then save them to table:
-     *  "DELIVERIES"
-     *  and clear full row, in temporary table
-     *  "TEMP"
+     *  when the row in table will be full, then save them to model:
+     *  Delivery
+     *  and remove row, in temporary table
      *
-     * @param clientId   that define table's row
-     * @param templateConsumer
-     * @return
+     * @param clientId that define table's row
+     * @param consumer universe receiver method
+     * @return delivery model
      */
-    private Delivery saveToTemporaryTable(String clientId, Consumer<Temp> templateConsumer) {
+    private Delivery uniteDataReceiver(String clientId, Consumer<Temp> consumer) {
         Optional<Temp> temp = tempRepository.findById(Long.valueOf(clientId));
         Delivery delivery = null;
         if (temp.isEmpty()) {
             temp = Optional.of(new Temp());
             temp.get().setClientId(Long.valueOf(clientId));
-            templateConsumer.accept(temp.get());
+            consumer.accept(temp.get());
         } else {
-            templateConsumer.accept(temp.get());
+            consumer.accept(temp.get());
         }
 
         if (temp.get().isReady()) {
             delivery = templateToDelivery(temp.get());
-            delivery.setPrice(deliveryService.calcPrice(delivery));
             delivery.setStatus(DeliveryStatus.PENDING);
-            repository.save(delivery);
             tempRepository.delete(temp.get());
         } else {
             tempRepository.save(temp.get());

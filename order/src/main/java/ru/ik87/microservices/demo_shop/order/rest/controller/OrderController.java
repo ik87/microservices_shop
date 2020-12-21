@@ -75,6 +75,9 @@ public class OrderController {
         if (order == null) {
             throw new OrderNotFoundException(order_id);
         }
+        if (order.getStatus() != OrderStatus.CONFIRMED) {
+            throw new OrderBadRequestException(order_id);
+        }
         repository.delete(order);
     }
 }

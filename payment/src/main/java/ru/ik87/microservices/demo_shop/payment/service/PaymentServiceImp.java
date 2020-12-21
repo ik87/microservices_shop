@@ -10,7 +10,7 @@ public class PaymentServiceImp implements PaymentService {
        String bankCard = payment.getCustomer().getBankCard();
        Double costOfDelivery = payment.getDelivery().getPrice();
        Double costOfOrder = payment.getOrder().getPrice();
-       //to do
+       //some business logic here
         return true;
     }
 }
